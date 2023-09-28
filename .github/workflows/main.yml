@@ -4,7 +4,7 @@ on:
       - main
 
 name: "Trigger: Push action"
-permissions: {}
+permissions: read-all
 
 jobs:
   shellcheck:
