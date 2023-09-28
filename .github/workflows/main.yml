@@ -1,11 +1,14 @@
+name: "6. [PR] Run ShellCheck for Pull Request"
+# This workflow setup is based on this :
+# https://github.com/redhat-plumbers-in-action/differential-shellcheck#usage
 on:
   pull_request:
     branches:
       - main
       - develop
 
-name: "Trigger: Push action"
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   shellcheck:
@@ -14,7 +17,6 @@ jobs:
     permissions:
       # required for all workflows
       security-events: write
-
       # only required for workflows in private repositories
       actions: read
       contents: read
@@ -22,10 +24,13 @@ jobs:
       - name: Repository checkout
         uses: actions/checkout@v3
         with:
+          # fetch-depth: 0 is required to run differential-shellcheck successfully. It fetches all git history.
           fetch-depth: 0
 
       - id: ShellCheck
         name: Differential ShellCheck
-        uses: redhat-plumbers-in-action/differential-shellcheck@v4
+        uses: redhat-plumbers-in-action/differential-shellcheck@v4.2.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # other options can be found here
+          # https://github.com/redhat-plumbers-in-action/differential-shellcheck#configuration-options
