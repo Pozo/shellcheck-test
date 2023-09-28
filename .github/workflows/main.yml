@@ -1,7 +1,8 @@
 on:
-  push:
+  pull_request:
     branches:
       - main
+      - develop
 
 name: "Trigger: Push action"
 permissions: read-all
@@ -10,7 +11,21 @@ jobs:
   shellcheck:
     name: Shellcheck
     runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
+
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
     steps:
-      - uses: actions/checkout@v3
-      - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@master
+      - name: Repository checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - id: ShellCheck
+        name: Differential ShellCheck
+        uses: redhat-plumbers-in-action/differential-shellcheck@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
